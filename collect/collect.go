@@ -3,6 +3,7 @@ package collect
 import (
 	"bufio"
 	"fmt"
+	"github.com/1152545264/goSpyder/extensions"
 	"github.com/1152545264/goSpyder/proxy"
 	"go.uber.org/zap"
 	"golang.org/x/net/html/charset"
@@ -62,13 +63,14 @@ func (b BrowserFetch) Get(request *Request) ([]byte, error) {
 	if err != nil {
 		return nil, fmt.Errorf("get url failed:%v", err)
 	}
-	if len(request.Cookie) > 0 {
-		req.Header.Set("Cookie", request.Cookie)
+	if len(request.Task.Cookie) > 0 {
+		req.Header.Set("Cookie", request.Task.Cookie)
 	}
-	req.Header.Set("User-Agent", "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/105.0.0.0 Safari/537.36")
+	req.Header.Set("User-Agent", extensions.GenerateRandomUA())
 
 	resp, err := client.Do(req)
 	if err != nil {
+		b.Logger.Error("fetch failed", zap.Error(err))
 		return nil, err
 	}
 
